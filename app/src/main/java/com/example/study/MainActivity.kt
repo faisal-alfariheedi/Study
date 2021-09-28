@@ -19,8 +19,8 @@ class MainActivity : AppCompatActivity() {
             switcher(1)
         }
 
-
     }
+// the app is empty it will get populated when i am free from more important subject to learn
 
     fun switcher(i:Int){
         val intent: Intent
