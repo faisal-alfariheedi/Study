@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Study</string>
+    <string name="preference_java_key">com.example.study.PREFERENCE_java_KEY</string>
+    <string name="preference_kot_key">com.example.study.PREFERENCE_kot_KEY</string>
+</resources>
