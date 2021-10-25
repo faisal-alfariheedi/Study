@@ -8,18 +8,25 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class androidstudy : AppCompatActivity() {
     lateinit var rv: RecyclerView
-    lateinit var dbh:Dbhelper
+//    lateinit var dbh:Dbhelper
     lateinit var fb:FloatingActionButton
+    lateinit var dba:AndNoteDao
+    var list=listOf(AndNote(0,"placeholde","",""))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_androidstudy)
         rv = findViewById(R.id.rv)
         fb=findViewById(R.id.floatingActionButton)
-        dbh=Dbhelper(this)
+//        dbh=Dbhelper(this)
+        dba=NoteDB.getInstance(this).AndNoteDao()
         rv.layoutManager = LinearLayoutManager(this)
+        rv.adapter=ARVAdapter(list ,this@androidstudy)
         rvupdate()
         fb.setOnClickListener {
             alert()
@@ -27,10 +34,14 @@ class androidstudy : AppCompatActivity() {
 
     }
     fun rvupdate(){
-        rv.adapter=RVAdapter(dbh.getall("andr"),this)
+        CoroutineScope(Dispatchers.IO).launch {
+            list=dba.getall()
+            runOnUiThread{rv.adapter=ARVAdapter(list ,this@androidstudy)}
+        }
+//        rv.adapter=RVAdapter(dbh.getall("andr"),this)
     }
     fun alert() {
-        var n=Note("0","","","")
+        var n=KotNote(0,"","","")
         var d= AlertDialog.Builder(this)
         lateinit var input: EditText
         lateinit var desc: EditText
@@ -41,7 +52,10 @@ class androidstudy : AppCompatActivity() {
             if(full.text.isEmpty()){
                 n.full=desc.text.toString()
             }else n.full= full.text.toString()
-            dbh.addnote("andr",n.tit,n.desc,n.full)
+            CoroutineScope(Dispatchers.IO).launch {
+                dba.addeditNote(AndNote(0,n.tit,n.desc,n.full))
+            }
+//            dbh.addnote("andr",n.tit,n.desc,n.full)
             rvupdate()
         }
             .setNegativeButton("Cancel") { d, _ -> d.cancel() }

@@ -41,9 +41,9 @@ class Dbhelper(cont: Context): SQLiteOpenHelper(cont, "notes",null, 1) {
     }
 
     @SuppressLint("Range")
-    fun getall(dbs: String):ArrayList<Note>{
+    fun getall(dbs: String):ArrayList<KotNote>{
         val db = this.readableDatabase
-        var list=arrayListOf<Note>()
+        var list=arrayListOf<KotNote>()
         var query=""
         when(dbs){
             "kot"->{
@@ -65,8 +65,8 @@ class Dbhelper(cont: Context): SQLiteOpenHelper(cont, "notes",null, 1) {
             if (cursor.moveToFirst()) {
                 do {
                     list.add(
-                        Note(
-                            cursor.getInt(cursor.getColumnIndex("id")).toString(),
+                        KotNote(
+                            cursor.getInt(cursor.getColumnIndex("id")),
                             cursor.getString(cursor.getColumnIndex("tit")),
                             cursor.getString(cursor.getColumnIndex("descc")),
                             cursor.getString(cursor.getColumnIndex("fulll"))
@@ -78,19 +78,19 @@ class Dbhelper(cont: Context): SQLiteOpenHelper(cont, "notes",null, 1) {
         db.close()
         return list
     }
-    fun updateNote(dbs: String,note: Note): Int {
+    fun updateNote(dbs: String, kotNote: KotNote): Int {
         val db = this.writableDatabase
         var success=0
         var cv = ContentValues()
-        cv.put("tit",note.tit)
-        cv.put("descc",note.desc)
-        cv.put("fulll",note.full)
+        cv.put("tit",kotNote.tit)
+        cv.put("descc",kotNote.desc)
+        cv.put("fulll",kotNote.full)
         when(dbs){
             "kot"->{
-                success= db.update("kotnote", cv, "id = ${note.id}", null)
+                success= db.update("kotnote", cv, "id = ${kotNote.id}", null)
             }
             "andr"->{
-                success= db.update("andnote", cv, "id = ${note.id}", null)
+                success= db.update("andnote", cv, "id = ${kotNote.id}", null)
             }
         }
 
@@ -98,15 +98,15 @@ class Dbhelper(cont: Context): SQLiteOpenHelper(cont, "notes",null, 1) {
         return success
     }
 
-    fun deleteNote(dbs: String,note: Note): Int{
+    fun deleteNote(dbs: String, kotNote: KotNote): Int{
         val db = this.writableDatabase
         var success=0
         when(dbs){
             "kot"->{
-                success= db.delete("kotnote", "id = ${note.id}", null)
+                success= db.delete("kotnote", "id = ${kotNote.id}", null)
             }
             "andr"->{
-                success= db.delete("andnote", "id = ${note.id}", null)
+                success= db.delete("andnote", "id = ${kotNote.id}", null)
             }
         }
         db.close()

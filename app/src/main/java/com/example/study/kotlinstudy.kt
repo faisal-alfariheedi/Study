@@ -8,18 +8,25 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class kotlinstudy : AppCompatActivity() {
     lateinit var rv: RecyclerView
-    lateinit var dbh:Dbhelper
+//    lateinit var dbh:Dbhelper
     lateinit var fb: FloatingActionButton
+    lateinit var dbk:KotNoteDao
+    var list=listOf(KotNote(0,"placeholde","",""))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_kotlinstudy)
         rv = findViewById(R.id.rv)
         fb=findViewById(R.id.floatingActionButton)
-        dbh=Dbhelper(this)
+//        dbh=Dbhelper(this)
+        dbk=NoteDB.getInstance(this).KotNoteDao()
         rv.layoutManager = LinearLayoutManager(this)
+        rv.adapter=KRVAdapter(list ,this)
         rvupdate()
         fb.setOnClickListener {
             alert()
@@ -27,10 +34,14 @@ class kotlinstudy : AppCompatActivity() {
 
     }
     fun rvupdate(){
-        rv.adapter=RVAdapter(dbh.getall("kot"),this)
+        CoroutineScope(Dispatchers.IO).launch {
+            list=dbk.getall()
+            runOnUiThread{rv.adapter=KRVAdapter(list ,this@kotlinstudy)}
+        }
+//        rv.adapter=RVAdapter(dbh.getall("kot"),this)
     }
     fun alert() {
-        var n=Note("0","","","")
+        var n=KotNote(0,"","","")
         var d= AlertDialog.Builder(this)
         lateinit var input: EditText
         lateinit var desc: EditText
@@ -39,7 +50,10 @@ class kotlinstudy : AppCompatActivity() {
             n.tit = input.text.toString()
             n.desc= desc.text.toString()
             if(full.text.isEmpty()){n.full=n.desc}else n.full= full.text.toString()
-            dbh.addnote("kot",n.tit,n.desc,n.full)
+            CoroutineScope(Dispatchers.IO).launch {
+                dbk.addeditNote(KotNote(0,n.tit,n.desc,n.full))
+            }
+//            dbh.addnote("kot",n.tit,n.desc,n.full)
             rvupdate()
         }
             .setNegativeButton("Cancel") { d, _ -> d.cancel() }
