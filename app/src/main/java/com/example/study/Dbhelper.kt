@@ -13,28 +13,47 @@ class Dbhelper(cont: Context): SQLiteOpenHelper(cont, "notes",null, 1) {
 
     override fun onCreate(db: SQLiteDatabase?) {
         if(db != null){
-            db.execSQL("create table note(id INTEGER PRIMARY KEY,tit text,descc text,fulll text)")
-        }
+            db.execSQL("create table kotnote(id INTEGER PRIMARY KEY,tit text,descc text,fulll text)")
+            db.execSQL("create table andnote(id INTEGER PRIMARY KEY,tit text,descc text,fulll text)")        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, p1: Int, p2: Int) {}
 
-    fun addnote(tit:String,d:String,f:String): Long {
+    fun addnote(dbs:String,tit:String,d:String,f:String): Long {
         val db = this.writableDatabase
+        var st:Long
         val cv= ContentValues()
         cv.put("tit",tit)
         cv.put("descc",d)
         cv.put("fulll",f)
-        var st= db.insert("note",null,cv)
+        when(dbs) {
+            "kot" ->{
+                 st =db.insert("kotnote", null, cv)
+            }
+            "andr" ->{
+                 st= db.insert("andnote",null,cv)
+            }
+            else -> { st=-1}
+        }
+
         db.close()
         return st
     }
 
     @SuppressLint("Range")
-    fun getall():ArrayList<Note>{
+    fun getall(dbs: String):ArrayList<Note>{
         val db = this.readableDatabase
         var list=arrayListOf<Note>()
-        val query="SELECT * from note"
+        var query=""
+        when(dbs){
+            "kot"->{
+                query="SELECT * from kotnote"
+            }
+            "andr"->{
+                query="SELECT * from andnote"
+            }
+        }
+
         var cursor : Cursor? = null
         try {
             cursor=db.rawQuery(query,null)
@@ -50,7 +69,7 @@ class Dbhelper(cont: Context): SQLiteOpenHelper(cont, "notes",null, 1) {
                             cursor.getInt(cursor.getColumnIndex("id")).toString(),
                             cursor.getString(cursor.getColumnIndex("tit")),
                             cursor.getString(cursor.getColumnIndex("descc")),
-                            cursor.getString(cursor.getColumnIndex("full"))
+                            cursor.getString(cursor.getColumnIndex("fulll"))
                         )
                     )
                 } while (cursor.moveToNext())
@@ -59,21 +78,37 @@ class Dbhelper(cont: Context): SQLiteOpenHelper(cont, "notes",null, 1) {
         db.close()
         return list
     }
-    fun updateNote(note: Note): Int {
+    fun updateNote(dbs: String,note: Note): Int {
         val db = this.writableDatabase
+        var success=0
         var cv = ContentValues()
         cv.put("tit",note.tit)
         cv.put("descc",note.desc)
         cv.put("fulll",note.full)
-        val success = db.update("note", cv, "id = ${note.id}", null)
+        when(dbs){
+            "kot"->{
+                success= db.update("kotnote", cv, "id = ${note.id}", null)
+            }
+            "andr"->{
+                success= db.update("andnote", cv, "id = ${note.id}", null)
+            }
+        }
 
         db.close()
         return success
     }
 
-    fun deleteNote(note: Note): Int{
+    fun deleteNote(dbs: String,note: Note): Int{
         val db = this.writableDatabase
-        val success = db.delete("note", "id = ${note.id}", null)
+        var success=0
+        when(dbs){
+            "kot"->{
+                success= db.delete("kotnote", "id = ${note.id}", null)
+            }
+            "andr"->{
+                success= db.delete("andnote", "id = ${note.id}", null)
+            }
+        }
         db.close()
         return success
 //        success > 0 means it worked

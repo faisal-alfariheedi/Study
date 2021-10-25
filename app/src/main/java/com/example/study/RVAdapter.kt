@@ -40,11 +40,16 @@ class RVAdapter(private val rv: ArrayList<Note>, val cont: Context): RecyclerVie
                 alert(rv[position])
             }
             del.setOnClickListener{
-                dbh.deleteNote(rv[position])
-                if(cont is androidstudy)
+
+                if(cont is androidstudy) {
+                    dbh.deleteNote("andr",rv[position])
                     cont.rvupdate()
-                if(cont is kotlinstudy)
+                }
+                if(cont is kotlinstudy) {
+                    dbh.deleteNote("kot",rv[position])
                     cont.rvupdate()
+
+                }
             }
 
         }
@@ -60,11 +65,15 @@ class RVAdapter(private val rv: ArrayList<Note>, val cont: Context): RecyclerVie
             n.tit = input.text.toString()
             n.desc= desc.text.toString()
             n.full= full.text.toString()
-            dbh.updateNote(n)
-            if(cont is androidstudy)
+
+            if(cont is androidstudy) {
+                dbh.updateNote("andr",n)
                 cont.rvupdate()
-            if(cont is kotlinstudy)
+            }
+            if(cont is kotlinstudy) {
+                dbh.updateNote("kot",n)
                 cont.rvupdate()
+            }
         }
             .setNegativeButton("Cancel") { d, _ -> d.cancel() }
         d.setTitle("Edit note")

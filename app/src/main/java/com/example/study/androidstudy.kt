@@ -27,7 +27,7 @@ class androidstudy : AppCompatActivity() {
 
     }
     fun rvupdate(){
-        rv.adapter=RVAdapter(dbh.getall(),this)
+        rv.adapter=RVAdapter(dbh.getall("andr"),this)
     }
     fun alert() {
         var n=Note("0","","","")
@@ -38,8 +38,10 @@ class androidstudy : AppCompatActivity() {
         d.setPositiveButton("add") { _, _ ->
             n.tit = input.text.toString()
             n.desc= desc.text.toString()
-            if(full.text.isEmpty()){n.full=n.desc}else n.full= full.text.toString()
-            dbh.addnote(n.tit,n.desc,n.full)
+            if(full.text.isEmpty()){
+                n.full=desc.text.toString()
+            }else n.full= full.text.toString()
+            dbh.addnote("andr",n.tit,n.desc,n.full)
             rvupdate()
         }
             .setNegativeButton("Cancel") { d, _ -> d.cancel() }
