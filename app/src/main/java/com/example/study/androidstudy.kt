@@ -38,8 +38,8 @@ class androidstudy : AppCompatActivity() {
         d.setPositiveButton("add") { _, _ ->
             n.tit = input.text.toString()
             n.desc= desc.text.toString()
-            n.full= full.text.toString()
-            dbh.updateNote(n)
+            if(full.text.isEmpty()){n.full=n.desc}else n.full= full.text.toString()
+            dbh.addnote(n.tit,n.desc,n.full)
             rvupdate()
         }
             .setNegativeButton("Cancel") { d, _ -> d.cancel() }
