@@ -1,12 +1,13 @@
-package com.example.study
+package com.example.study.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface KotNoteDao {
 
     @Query("SELECT * from KotNote")
-    fun getall(): List<KotNote>
+    fun getall(): LiveData<List<KotNote>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addeditNote(kotNote: KotNote)
@@ -18,7 +19,7 @@ interface KotNoteDao {
 @Dao
 interface AndNoteDao {
     @Query("SELECT * from AndNote")
-    fun getall():List<AndNote>
+    fun getall():LiveData<List<AndNote>>
 
     @Insert(onConflict= OnConflictStrategy.REPLACE)
     fun addeditNote(andNote: AndNote)
